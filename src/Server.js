@@ -169,6 +169,7 @@ Server.prototype.initialize = function (port, address, config) {
   this.gameState.gameMode = this.config.gameMode;
   this.gameState.maxPlayers = this.config.maxPlayers;
   this.gameState.radarArrows = this.config.radarArrows;
+  this.gameState.showVisiblePlayersOnly = this.config.showVisiblePlayersOnly
   this.gameState.sessionComplete = false;
   this.gameState.mapNumber = 0; // Missä config.map listan kartassa mennään
 
@@ -332,7 +333,8 @@ Server.prototype.sendReply = function (client, player) {
     , playerIds = Object.keys(this.players)
     , plr
     , server = this
-    , timeLeft;
+    , timeLeft
+    , map = this.gameState.map;
 
   // Lähetetään kaikkien pelaajien tiedot
   this.loopPlayers(function (plr) {
@@ -354,9 +356,8 @@ Server.prototype.sendReply = function (client, player) {
         , x2 = plr.x
         , y2 = plr.y
         , visible = !((Math.abs(x1 - x2) > 450*2) || (Math.abs(y1 - y2) > 350*2));
-
       // Onko näkyvissä vai voidaanko muuten lähettää
-      if (player.sendNames || visible || plr.health <= 0) {
+      if ((player.sendNames || visible || plr.health <= 0) && (!map.findWall2(x1, y1, x2, y2) || server.gameState.showVisiblePlayersOnly != true)) {
         // Näkyy
         reply.putByte(NET.PLAYER); // Pelaajan tietoja
         reply.putByte(plr.id);     // Pelaajan tunnus

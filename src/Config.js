@@ -146,6 +146,12 @@ Config.defaults = {
    */
   radarArrows: true,
   /**
+   * Näytetäänkö vain näkyvissä olevat pelaajat
+   * @type Boolean
+   * @default false
+  */
+  showVisiblePlayersOnly: false,
+  /**
    * Palvelimen pelimoottorin päivitystahti, kuinka monta päivitystä per sekunti tehdään.
    * @type Number
    * @default 60
