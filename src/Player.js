@@ -50,7 +50,8 @@ var log = require('./Utils').log
  * @property {Integer} zombie        Onko tämä pelaaja botti
  * @property {Player}  shootedBy     Kuka on viimeksi ampunut pelaajaa
  * @property {Integer} hasAmmos      Onko pelaajalla ammuksia nykyisessä aseessa
- * @property {Byte}    team          Joukkue
+ * @property {Byte}    team          Joukkue, jossa pelaaja tällä hetkellä on
+ * @property {Byte}    wantedTeam    Joukkue, johon pelaaja halutaan
  * @property {String}  mapName       Pelaajalla ladattuna oleva kartta
  * @property {Integer} outOfMap      Kuinka monta päivityskierrosta pelaaja on ollut poissa kartalta
  * @property {Integer} spawnTime     Syntymäaika
@@ -221,6 +222,7 @@ Player.prototype.setTeamEvenly = function () {
   // Deathmatch-moodissa kaikki pelaajat ovat vihreillä
   if (server.gameState.gameMode === 1) {
     this.team = 1;
+    this.wantedTeam = this.team;
     return;
   }
 
@@ -231,6 +233,7 @@ Player.prototype.setTeamEvenly = function () {
     } else {
       this.team = 1;
     }
+    this.wantedTeam = this.team;
     return;
   }
 
@@ -251,6 +254,7 @@ Player.prototype.setTeamEvenly = function () {
   } else {
     this.team = rand(1, 2);
   }
+  this.wantedTeam = this.team;
 };
 
 module.exports = Player;

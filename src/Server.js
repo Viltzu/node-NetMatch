@@ -291,7 +291,7 @@ Server.prototype.handlePacket = function (client) {
     client.reply(reply);
     return;
   }
-
+  
   // Logout on erikseen, koska sen jälkeen ei varmasti tule mitään muuta
   if (msgType === NET.LOGOUT) {
     this.emit(NET.LOGOUT, client, player);
@@ -350,14 +350,16 @@ Server.prototype.sendReply = function (client, player) {
     }
 
     // Lähetetään niiden pelaajien tiedot jotka ovat hengissä ja näkyvissä
-    if (plr.active) {
+    if (plr.active && plr.team !== 0) {
       var x1 = player.x
         , y1 = player.y
         , x2 = plr.x
         , y2 = plr.y
         , visible = !((Math.abs(x1 - x2) > 450*2) || (Math.abs(y1 - y2) > 350*2));
-      // Onko näkyvissä vai voidaanko muuten lähettää
-      if ((player.sendNames || visible || plr.health <= 0) && (!map.findWall2(x1, y1, x2, y2) || server.gameState.showVisiblePlayersOnly != true)) {
+      // Onko näkyvissä vai voidaanko muuten lähettää, pelaajan ollessa katsojana hän voi nähdä kaikki pelaajat
+      if (((player.sendNames || visible || plr.health <= 0) 
+      && (!map.findWall2(x1, y1, x2, y2) || !server.gameState.showVisiblePlayersOnly) || player.team === 0)) {
+      
         // Näkyy
         reply.putByte(NET.PLAYER); // Pelaajan tietoja
         reply.putByte(plr.id);     // Pelaajan tunnus
@@ -745,7 +747,8 @@ Server.prototype.initBots = function () {
     } else {
       plr.team = 1;
     }
-
+    plr.wantedTeam = plr.team;
+    
     // Luodaan botille tekoäly ja asetetaan sen taitotaso samaksi kuin pelaaja-ID
     plr.botAI = new BotAI(server, plr);
     plr.botAI.setSkill(plr.id);

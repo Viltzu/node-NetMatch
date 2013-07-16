@@ -193,9 +193,41 @@ Game.prototype.updatePlayers = function () {
   var playerIds = Object.keys(this.server.players);
   for (var i = playerIds.length; i--;) {
     var player = this.server.players[playerIds[i]];
-
+    
+    // Vaihdetaan pelaajan tiimi, jos pelaaja on eri tiimissä kuin missä pitäisi
+    if (player.active && player.team !== player.wantedTeam) {
+      log.write('Changing team from %0 to %1', player.team, player.wantedTeam);
+      player.team = player.wantedTeam;
+      // Tarkistetaan halutaanko pelaaja katsojaksi
+      if (player.team === 0) {
+        player.health = -10;
+        player.isDead = true;
+        player.timeToDeath = Date.now();
+      }
+      
+      // Lähetetään kaikille tieto tiimin vaihdosta
+      this.server.messages.addToAll({
+        msgType: NET.TEAMINFO,
+        player:  player,
+        team: player.team
+      });
+      
+      // Pelaajalle tieto mihin hänet siirrettiin
+      switch (player.team) {
+        case 0:
+          this.server.serverMessage('You have been moved to spectators', player);
+          break;
+        case 1:
+          this.server.serverMessage('You have been moved to GREEN team', player);
+          break;
+        case 2:
+          this.server.serverMessage('You have been moved to RED team', player);
+      }
+      return;
+    }
+    
     // Jos pelaaja on kuollut ja kuolemasta on kulunut tarpeeksi aikaa, herätetään henkiin.
-    if (player.health <= 0 && player.timeToDeath + this.server.config.deathDelay < Date.now()) {
+    if (player.health <= 0 && player.timeToDeath + this.server.config.deathDelay < Date.now() && player.team !== 0) {
       if (this.server.debug) {
         log.write('Reviving %0 from the deads.', player.name.green);
       }

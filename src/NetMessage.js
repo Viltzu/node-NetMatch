@@ -35,6 +35,7 @@ function NetMessages(server) {
  * @param {Byte}      data.msgType      Viestityyppi, kts. {@link NET}
  * @param {String}    data.msgText      Viestin teksti
  * @param {Player}    data.player       Kuka viestin lähetti
+ * @param {Byte}      data.team         Tiimi
  * @param {Short}     data.bullet       Ammus
  * @param {Byte}      data.itemId       Tavaran tunnus
  * @param {Byte}      data.itemType     Tavaran tyyppi
