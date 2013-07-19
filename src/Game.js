@@ -196,7 +196,6 @@ Game.prototype.updatePlayers = function () {
     
     // Vaihdetaan pelaajan tiimi, jos pelaaja on eri tiimissä kuin missä pitäisi
     if (player.active && player.team !== player.wantedTeam) {
-      log.write('Changing team from %0 to %1', player.team, player.wantedTeam);
       player.team = player.wantedTeam;
       // Tarkistetaan halutaanko pelaaja katsojaksi
       if (player.team === 0) {
